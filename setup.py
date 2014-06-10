@@ -11,7 +11,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-version = idioticon.__version__
+version = idioticon.get_version()
 description = idioticon.__doc__
 
 if sys.argv[-1] == 'publish':
