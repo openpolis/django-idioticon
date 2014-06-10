@@ -47,7 +47,7 @@ Then use it in a project::
     'My term'
 
     >>> alias = idioticon.add_alias('my-term', 'my-alias', 'My alias', 'description')
-    >>> alias.main_term is
+    >>> alias.main_term == idioticon.get_term('my-term')
 
 
 
