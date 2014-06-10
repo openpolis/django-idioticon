@@ -99,7 +99,7 @@ class Term(models.Model):
         return self.objects.add_alias(self, key, name, description)
 
     def __unicode__(self):
-        return self.name
+        return self.get_name()
 
     @property
     def is_main_term(self):

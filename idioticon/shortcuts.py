@@ -65,7 +65,7 @@ def set_term(key, name=None, definition=None):
         term.name = name
     if definition is not None:
         term.definition = definition
-
+    term.save()
     return term
 
 
