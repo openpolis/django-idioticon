@@ -1,3 +1,6 @@
+"""
+Django-idioticon is a module that allows to disseminate html templates with clickable question marks (idioticons).
+"""
 import logging
 
 
@@ -12,4 +15,4 @@ stream.setLevel(logging.INFO)
 log.addHandler(stream)
 
 
-from .models import get_term
+from idioticon.models import get_term, add_term, update_term, set_term, delete_term, add_alias

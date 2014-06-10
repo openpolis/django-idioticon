@@ -12,6 +12,7 @@ except ImportError:
     from distutils.core import setup
 
 version = idioticon.__version__
+description = idioticon.__doc__
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -26,7 +27,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='django-idioticon',
     version=version,
-    description="""Django-idioticon is a module that allows to disseminate html templates with clickable question marks (idioticons)""",
+    description=description,
     long_description=readme + '\n\n' + history,
     author='openpolis',
     author_email='lab@openpolis.it',
