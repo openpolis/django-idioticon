@@ -21,7 +21,7 @@ class TermTypeFilter(SimpleListFilter):
 class TermInline(admin.TabularInline):
     model = Term
     extra = 1
-    fields = ('key', )
+    fields = ('key', 'name')
 
 class TermAdmin(admin.ModelAdmin):
     prepopulated_fields = {"key": ("name",)}
@@ -30,6 +30,5 @@ class TermAdmin(admin.ModelAdmin):
     ordering = ('key', )
     list_display = ('key', 'name', 'main_term')
     search_fields = ('key', 'name',)
-    readonly_fields=('key',)
 
 admin.site.register(Term, TermAdmin)
