@@ -6,17 +6,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class TermManager(models.Manager):
-    def get_term(self, key, resolve_alias=True, soft_error=False):
+    def get_term(self, key, soft_error=False):
         """This method tries to return a term by key.
-        Automatically load the main term if an alias key is provided.
         Can raise Term.DoesNotExist if soft_error is False (as in default).
 
         :param key: term
         :type key: str
         :param resolve_alias: default True
         :type resolve_alias: bool
-        :param soft_error: default False
-        :type soft_error: bool
         :returns: then matching Term
         :rtype Term:
         :raises Term.DoesNotExist
@@ -27,9 +24,6 @@ class TermManager(models.Manager):
         try:
             # use select_related to load main term and requested alias with one query.
             term = self.get_queryset().select_related('main_term').get(key=key)
-
-            if resolve_alias and not term.is_main_term:
-                term = term.main_term
 
         except Term.DoesNotExist:
             if not soft_error:

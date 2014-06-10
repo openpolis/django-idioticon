@@ -11,6 +11,7 @@ from django.utils.text import slugify
 import faker
 
 from idioticon import models
+from idioticon import shortcuts
 
 
 class TestIdioticonGetTerm(unittest.TestCase):
@@ -63,8 +64,9 @@ class TestIdioticonGetTerm(unittest.TestCase):
                 # is alias
                 self.assertFalse(term.is_main_term)
                 self.assertTrue(term.is_alias)
-                self.assertEqual(term.main_term, self.manager.get_term(term.key))
-                self.assertEqual(term, self.manager.get_term(term.key, resolve_alias=False))
+                self.assertEqual(term.main_term.name, term.get_name())
+                self.assertEqual(term.main_term.definition, term.get_definition())
+                self.assertEqual(term, self.manager.get_term(term.key))
 
             else:
                 # is main term
@@ -104,40 +106,40 @@ class TestIdioticonShortcuts(unittest.TestCase):
         )
 
     def test_add_term(self):
-        term = models.add_term('my-term', 'My term', 'Just a description')
+        term = shortcuts.add_term('my-term', 'My term', 'Just a description')
         self.assertTrue(term)
-        self.assertFalse(models.add_term('my-term', '...', '...'))
+        self.assertFalse(shortcuts.add_term('my-term', '...', '...'))
 
     def test_set_term(self):
         term = self._create_term('my-term')
         self.assertTrue(term)
         name = term.name
-        updated_term = models.set_term(term, name='My new term')
+        updated_term = shortcuts.set_term(term, name='My new term')
         self.assertTrue(updated_term)
         self.assertIs(term, updated_term)
         self.assertEqual(updated_term.name, 'My new term')
         self.assertNotEqual(updated_term.name, name)
 
-        self.assertTrue(models.set_term('not-existent-term', name='...'))
+        self.assertTrue(shortcuts.set_term('not-existent-term', name='...'))
 
     def test_update_term(self):
         term = self._create_term('my-term')
         self.assertTrue(term)
 
         old_name = term.name
-        updated_term = models.update_term(term, 'Pretty title')
+        updated_term = shortcuts.update_term(term, 'Pretty title')
         self.assertTrue(updated_term)
         self.assertIs(term, updated_term)
         self.assertEqual(updated_term.name, term.name)
         self.assertNotEqual(old_name, term.name)
 
-        self.assertFalse(models.update_term('not-existent-term', '...'))
+        self.assertFalse(shortcuts.update_term('not-existent-term', '...'))
 
     def test_delete_term(self):
         term = self._create_term()
         self.assertTrue(term)
-        models.delete_term(term.key)
-        term = models.get_term('my-term')
+        shortcuts.delete_term(term.key)
+        term = shortcuts.get_term('my-term')
         self.assertFalse(term)
 
     def test_add_alias(self):
@@ -145,5 +147,5 @@ class TestIdioticonShortcuts(unittest.TestCase):
         alias = self._create_term('my-alias', 'My alias', 'Just a alias description')
         self.assertTrue(term)
         self.assertTrue(alias)
-        self.assertTrue(models.add_alias(term, alias))
+        self.assertTrue(shortcuts.add_alias(term, alias))
         self.assertEqual(term, alias.main_term)

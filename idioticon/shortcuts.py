@@ -20,7 +20,7 @@ def get_term(key, resolve_alias=True, soft_error=True):
     :rtype: Term or bool
     :raises Term.DoesNotExist
     """
-    return get_term_model().objects.get_term(key, resolve_alias=resolve_alias, soft_error=soft_error)
+    return get_term_model().objects.get_term(key, soft_error=soft_error)
 
 
 def add_term(key, name='', definition=''):
@@ -58,7 +58,7 @@ def set_term(key, name=None, definition=None):
     :return: updated or added Term
     :rtype: Term
     """
-    term = get_term(key, resolve_alias=False, soft_error=True)
+    term = get_term(key, soft_error=True)
     if term is None:
         term = add_term(key)
     if name is not None:
@@ -82,7 +82,7 @@ def update_term(key, name=None, definition=None):
     :return: updated Term or False
     :rtype: Term or bool
     """
-    term = get_term(key, resolve_alias=False, soft_error=True)
+    term = get_term(key, soft_error=True)
     if term is None:
         return False
     if name is not None:
@@ -104,7 +104,7 @@ def delete_term(key, alias_cascade=True):
     :return: deleted Term or False
     :rtype: bool or Term
     """
-    term = get_term(key, resolve_alias=False, soft_error=True)
+    term = get_term(key, soft_error=True)
     if term is None:
         return False
 
@@ -133,7 +133,7 @@ def add_alias(term, alias, name='', definition=''):
     :rtype: Term or bool
     :raises Term.DoesNotExist
     """
-    term = get_term(term, resolve_alias=False, soft_error=True)
+    term = get_term(term, soft_error=True)
     if term is None:
         return False
     return get_term_model().objects.add_alias(term, alias, name, definition)
