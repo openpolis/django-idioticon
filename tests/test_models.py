@@ -64,6 +64,8 @@ class TestIdioticonGetTerm(unittest.TestCase):
                 self.assertFalse(term.is_main_term)
                 self.assertTrue(term.is_alias)
                 self.assertEqual(term.main_term, self.manager.get_term(term.key))
+                self.assertEqual(term, self.manager.get_term(term.key, resolve_alias=False))
+
             else:
                 # is main term
                 self.assertTrue(term.is_main_term)
@@ -86,7 +88,62 @@ class TestIdioticonGetTerm(unittest.TestCase):
 
     def test_term_does_not_exist_exception(self):
         self.assertRaises(models.Term.DoesNotExist, self.manager.get_term, 'not-existing-term')
-        self.assertEqual(None, self.manager.get_term('not-existing-term', True))
+        self.assertEqual(None, self.manager.get_term('not-existing-term', soft_error=True))
 
-    def tearDown(self):
-        pass
+
+class TestIdioticonShortcuts(unittest.TestCase):
+
+    def setUp(self):
+        models.Term.objects.all().delete()
+
+    def _create_term(self, key='my-term', name='My term', definition='Just a description'):
+        return models.Term.objects.create(
+            key=key,
+            name=name,
+            definition=definition
+        )
+
+    def test_add_term(self):
+        term = models.add_term('my-term', 'My term', 'Just a description')
+        self.assertTrue(term)
+        self.assertFalse(models.add_term('my-term', '...', '...'))
+
+    def test_set_term(self):
+        term = self._create_term('my-term')
+        self.assertTrue(term)
+        name = term.name
+        updated_term = models.set_term(term, name='My new term')
+        self.assertTrue(updated_term)
+        self.assertIs(term, updated_term)
+        self.assertEqual(updated_term.name, 'My new term')
+        self.assertNotEqual(updated_term.name, name)
+
+        self.assertTrue(models.set_term('not-existent-term', name='...'))
+
+    def test_update_term(self):
+        term = self._create_term('my-term')
+        self.assertTrue(term)
+
+        old_name = term.name
+        updated_term = models.update_term(term, 'Pretty title')
+        self.assertTrue(updated_term)
+        self.assertIs(term, updated_term)
+        self.assertEqual(updated_term.name, term.name)
+        self.assertNotEqual(old_name, term.name)
+
+        self.assertFalse(models.update_term('not-existent-term', '...'))
+
+    def test_delete_term(self):
+        term = self._create_term()
+        self.assertTrue(term)
+        models.delete_term(term.key)
+        term = models.get_term('my-term')
+        self.assertFalse(term)
+
+    def test_add_alias(self):
+        term = self._create_term()
+        alias = self._create_term('my-alias', 'My alias', 'Just a alias description')
+        self.assertTrue(term)
+        self.assertTrue(alias)
+        self.assertTrue(models.add_alias(term, alias))
+        self.assertEqual(term, alias.main_term)
