@@ -3,30 +3,32 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
-def get_term(key, soft_error=False):
-    return Term.objects.get_term(key, soft_error=soft_error)
 
 
 class TermManager(models.Manager):
-
-    def get_term(self, key, soft_error=False):
+    def get_term(self, key, resolve_alias=True, soft_error=False):
         """This method tries to return a term by key.
         Automatically load the main term if an alias key is provided.
         Can raise Term.DoesNotExist if soft_error is False (as in default).
 
         :param key: term
         :type key: str
-        :param soft_error:
+        :param resolve_alias: default True
+        :type resolve_alias: bool
+        :param soft_error: default False
         :type soft_error: bool
         :returns: then matching Term
         :rtype Term:
         :raises Term.DoesNotExist
         """
+        if isinstance(key, Term):
+            return key
+
         try:
             # use select_related to load main term and requested alias with one query.
             term = self.get_queryset().select_related('main_term').get(key=key)
 
-            if not term.is_main_term:
+            if resolve_alias and not term.is_main_term:
                 term = term.main_term
 
         except Term.DoesNotExist:
@@ -36,6 +38,29 @@ class TermManager(models.Manager):
 
         return term
 
+    def add_alias(self, term, alias, name='', definition=''):
+        """Adds an Alias to main term.
+
+        :param term: Alias main term
+        :type term: Term
+        :param alias: alias key
+        :type alias: str or Term
+        :param name: alias name override
+        :type name: str
+        :param definition: alias definition override
+        :type definition: str
+        :returns: a Term alias
+        :rtype: Term
+        """
+        if not isinstance(alias, Term):
+            return Term.objects.create(
+                key=alias,
+                name=name,
+                definition=definition,
+                main_term=term)
+        alias.main_term = term
+        alias.save()
+        return alias
 
 class Term(models.Model):
     """
@@ -49,7 +74,7 @@ class Term(models.Model):
     key = models.SlugField(max_length=255, unique=True,
                            help_text=_("A single word, to use as key in popovers' inclusion tags"))
     name = models.CharField(_("Term"), blank=True, max_length=255, help_text=_("The term"))
-    definition = models.TextField(_("Definition"), blank=True,help_text=_("The definition of the term"))
+    definition = models.TextField(_("Definition"), blank=True, help_text=_("The definition of the term"))
 
     main_term = models.ForeignKey('self', null=True, blank=True, related_name='aliases',
                                   help_text=_("Main definition"))
@@ -70,8 +95,11 @@ class Term(models.Model):
             return self.main_term.get_definition()
         return ''
 
+    def add_alias(self, key, name='', description=''):
+        return self.objects.add_alias(self, key, name, description)
+
     def __unicode__(self):
-        return self.term
+        return self.name
 
     @property
     def is_main_term(self):
