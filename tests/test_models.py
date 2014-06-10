@@ -116,7 +116,7 @@ class TestIdioticonShortcuts(unittest.TestCase):
         name = term.name
         updated_term = shortcuts.set_term(term, name='My new term')
         self.assertTrue(updated_term)
-        self.assertIs(term, updated_term)
+        self.assertTrue(term is updated_term)
         self.assertEqual(updated_term.name, 'My new term')
         self.assertNotEqual(updated_term.name, name)
 
@@ -129,7 +129,7 @@ class TestIdioticonShortcuts(unittest.TestCase):
         old_name = term.name
         updated_term = shortcuts.update_term(term, 'Pretty title')
         self.assertTrue(updated_term)
-        self.assertIs(term, updated_term)
+        self.assertTrue(term is updated_term)
         self.assertEqual(updated_term.name, term.name)
         self.assertNotEqual(old_name, term.name)
 
