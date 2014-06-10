@@ -25,7 +25,7 @@ Install django-idioticon::
 
     pip install idioticon
 
-Then use it in a project::
+Add ``idioticon`` to ``settings.INSTALLED_APPS``, then use it in a project::
 
     >>> import idioticon
     >>> idioticon.get_term(key='not-existing-term', soft_error=True)
@@ -49,7 +49,19 @@ Then use it in a project::
     >>> alias = idioticon.add_alias('my-term', 'my-alias', 'My alias', 'description')
     >>> alias.main_term == idioticon.get_term('my-term')
 
+Template tags
+-------------
+::
 
+    {% load idioticon %}
+    {% term 'my-term' %}
+
+    <script>
+    $(document).ready(function(){
+        // activate popover
+        $('a[rel=info-popover]').popover();
+    });
+    </script>
 
 
 Features
