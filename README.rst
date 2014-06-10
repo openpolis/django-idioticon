@@ -2,13 +2,13 @@
 django-idioticon
 ================
 
-.. image:: https://badge.fury.io/py/idioticon.png
+.. image:: https://badge.fury.io/py/django-idioticon.png
     :target: https://badge.fury.io/py/django-idioticon
 
-.. image:: https://travis-ci.org/openpolis/idioticon.png?branch=master
+.. image:: https://travis-ci.org/openpolis/django-idioticon.png?branch=master
     :target: https://travis-ci.org/openpolis/django-idioticon
 
-.. image:: https://coveralls.io/repos/openpolis/idioticon/badge.png?branch=master
+.. image:: https://coveralls.io/repos/openpolis/django-idioticon/badge.png?branch=master
     :target: https://coveralls.io/r/openpolis/django-idioticon?branch=master
 
 Idioticon is a module that allows to disseminate html templates with clickable question marks (idioticons)
