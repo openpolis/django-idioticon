@@ -1,19 +1,27 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from idioticon.conf import settings
 
+try:
+    # Deprecated in Django 1.7
+    from django.utils.module_loading import import_by_path as import_string
 
+except ImportError:
+    # For Django 1.7
+    from django.utils.module_loading import import_string
 
+# Definition Field type
+TermDefinitionField = import_string(settings.IDIOTICON_TEXT_FIELD) if settings.IDIOTICON_TEXT_FIELD else models.TextField
 
 class TermManager(models.Manager):
+
     def get_term(self, key, soft_error=False):
         """This method tries to return a term by key.
         Can raise Term.DoesNotExist if soft_error is False (as in default).
 
         :param key: term
         :type key: str
-        :param resolve_alias: default True
-        :type resolve_alias: bool
         :returns: then matching Term
         :rtype Term:
         :raises Term.DoesNotExist
@@ -46,8 +54,9 @@ class TermManager(models.Manager):
         :returns: a Term alias
         :rtype: Term
         """
+        term = self.get_term(term)
         if not isinstance(alias, Term):
-            return Term.objects.create(
+            return self.get_queryset().create(
                 key=alias,
                 name=name,
                 definition=definition,
@@ -55,6 +64,7 @@ class TermManager(models.Manager):
         alias.main_term = term
         alias.save()
         return alias
+
 
 class Term(models.Model):
     """
@@ -68,7 +78,7 @@ class Term(models.Model):
     key = models.SlugField(max_length=255, unique=True,
                            help_text=_("A single word, to use as key in popovers' inclusion tags"))
     name = models.CharField(_("Term"), blank=True, max_length=255, help_text=_("The term"))
-    definition = models.TextField(_("Definition"), blank=True, help_text=_("The definition of the term"))
+    definition = TermDefinitionField(_("Definition"), blank=True, help_text=_("The definition of the term"))
 
     main_term = models.ForeignKey('self', null=True, blank=True, related_name='aliases',
                                   help_text=_("Main definition"))

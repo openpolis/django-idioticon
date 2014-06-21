@@ -23,9 +23,10 @@ Quickstart
 
 Install django-idioticon::
 
-    pip install idioticon
+    pip install django-idioticon
 
-Add ``idioticon`` to ``settings.INSTALLED_APPS``, then use it in a project::
+
+Add ``idioticon`` to ``settings.INSTALLED_APPS`` and execute `syncdb` to create Term table::
 
     >>> import idioticon
     >>> idioticon.get_term(key='not-existing-term', soft_error=True)
@@ -48,21 +49,7 @@ Add ``idioticon`` to ``settings.INSTALLED_APPS``, then use it in a project::
 
     >>> alias = idioticon.add_alias('my-term', 'my-alias', 'My alias', 'description')
     >>> alias.main_term == idioticon.get_term('my-term')
-
-Template tags
--------------
-::
-
-    {% load idioticon %}
-    {% term 'my-term' %}
-
-    <script>
-    $(document).ready(function(){
-        // activate popover
-        $('a[rel=info-popover]').popover();
-    });
-    </script>
-
+    True
 
 Features
 --------
@@ -71,3 +58,26 @@ Features
 * Idioticon administration
 * Shortcuts ( get_term, )
 * Tests for Django >= 1.5 and Python >= 2.6
+* django-modeltranslation integration for multi language site
+* Configurable definition field
+
+
+Settings
+--------
+
+Option | Description
+-------|------------
+IDIOTICON_THEME = 'span' | {% term_tag .. %} loads idioticon/term_THEME.html
+IDIOTICON_TEXT_FIELD = '' | Override the default TextField with your custom one.
+
+Template tags
+-------------
+::
+
+    {% load idioticon %}
+    {% term_tag 'my-term' %}
+
+    {% load_terms 'my-term' as term %}
+    {{ term.get_name %}
+    {{ term.get_definition %}
+
