@@ -161,7 +161,7 @@ class TestIdioticonConf(TestCase):
         from idioticon.conf import settings
         self.assertEqual(settings.IDIOTICON_TEXT_FIELD, self.custom_text_field)
         from idioticon import models
-        definition_field = filter(lambda x: x.name == 'definition', models.Term._meta.fields)[0]
+        definition_field = list(filter(lambda x: x.name == 'definition', models.Term._meta.fields))[0]
         self.assertIsInstance(definition_field, models.TermDefinitionField)
 
     @override_settings(IDIOTICON_THEME='abbr')
