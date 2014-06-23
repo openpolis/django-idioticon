@@ -167,6 +167,7 @@ class TestIdioticonConf(TestCase):
     @override_settings(IDIOTICON_THEME='abbr')
     def test_conf_theme(self):
         from idioticon.conf import settings
+        shortcuts.add_term('key', 'My Term')
         self.assertEqual(settings.IDIOTICON_THEME, 'abbr')
         from idioticon.templatetags.idioticon import do_term_tag
         self.assertIn('<abbr', do_term_tag('key'))
