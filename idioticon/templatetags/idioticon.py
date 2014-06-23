@@ -56,7 +56,7 @@ def do_load_terms(parser, token):
     except ValueError:
         raise TemplateSyntaxError("'load_terms' requires '*terms as *variables' (got %r)" % args)
 
-    names, terms = args[as_index+1:], map(lambda t: t.strip('\'').strip('"'), args[1:as_index])
+    names, terms = args[as_index+1:], list(map(lambda t: t.strip('\'').strip('"'), args[1:as_index]))
 
     if len(names) != len(terms):
         raise TemplateSyntaxError("'load_terms' requires '*terms as *variables' (got %r)" % args)
